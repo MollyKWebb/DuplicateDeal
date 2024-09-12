@@ -1,56 +1,24 @@
-const axios = require('axios');
+const hubspot = require('@hubspot/api-client');
 
 exports.main = async (context = {}) => {
   const { hs_object_id } = context.propertiesToSend;
-  const token = process.env['privateappkey'];
+  const hubspotClient = new hubspot.Client({ accessToken: process.env.privateappkey });
 
-  return await fetchDealData(token, hs_object_id);
-};
-
-const fetchDealData = async (token, id) => {
-  const requestBody = {
-    operationName: 'data',
-    query: QUERY,
-    variables: { id },
-  };
-
-  const response = await axios.post('https://api.hubapi.com/collector/graphql', JSON.stringify(requestBody), {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const responseBody = response.data;
-
-  const lineItemsResponse = await axios.get(
-    `https://api.hubapi.com/crm/v3/objects/deals/${id}/associations/line_items`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  );
-
-  return {
-    associations: responseBody.data.CRM.deal.associations,
-    lineItemCount: lineItemsResponse.data.total,
-  };
-};
-
-const QUERY = `
-  query data($id: String!) {
-    CRM {
-      deal(uniqueIdentifier: $id) {
-        associations {
-          company_collection {
-            total
-          }
-          contact_collection {
-            total
-          }
-        }
-      }
-    }
+  try {
+    const dealData = await fetchDealData(hubspotClient, hs_object_id);
+    return dealData;
+  } catch (error) {
+    console.error('Error fetching deal data:', error);
+    throw error;
   }
-`;
+};
 
+async function fetchDealData(hubspotClient, dealId) {
+  try {
+    const deal = await hubspotClient.crm.deals.basicApi.getById(dealId, ['associations.company', 'associations.contact']);
+    return deal;
+  } catch (error) {
+    console.error('Error in fetchDealData:', error);
+    throw error;
+  }
+}

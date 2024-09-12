@@ -2,11 +2,11 @@
   "appFunctions": {
     "fetchDealData": {
       "file": "fetchDealData.js",
-      "secrets": [privateappkey]
+      "secrets": privateappkey
     },
     "duplicateDeal": {
       "file": "duplicateDeal.js",
-      "secrets": [privateappkey]
+      "secrets": privateappkey
     }
   }
 }

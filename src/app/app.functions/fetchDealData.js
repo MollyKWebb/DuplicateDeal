@@ -2,7 +2,7 @@ const hubspot = require('@hubspot/api-client');
 
 exports.main = async (context = {}) => {
   const { hs_object_id } = context.propertiesToSend;
-  const hubspotClient = new hubspot.Client({ accessToken: process.env.privateappkey });
+  const hubspotClient = new hubspot.Client({ accessToken: context.secrets.privateappkey });
 
   try {
     const dealData = await fetchDealData(hubspotClient, hs_object_id);

@@ -7,25 +7,6 @@ exports.main = async (context = {}) => {
   return await fetchDealData(token, hs_object_id);
 };
 
-const QUERY = `
-  query data($id: String!) {
-    CRM {
-      deal(uniqueIdentifier: $id) {
-        associations {
-          company_collection {
-            total
-          }
-          contact_collection {
-            total
-          }
-        }
-      }
-    }
-  }
-`;
-
-
-
 const fetchDealData = async (token, id) => {
   const requestBody = {
     operationName: 'data',
@@ -55,3 +36,21 @@ const fetchDealData = async (token, id) => {
     lineItemCount: lineItemsResponse.data.total,
   };
 };
+
+const QUERY = `
+  query data($id: String!) {
+    CRM {
+      deal(uniqueIdentifier: $id) {
+        associations {
+          company_collection {
+            total
+          }
+          contact_collection {
+            total
+          }
+        }
+      }
+    }
+  }
+`;
+

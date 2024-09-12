@@ -1,8 +1,25 @@
 const axios = require('axios');
 
+const QUERY = `
+  query data($id: String!) {
+    CRM {
+      deal(uniqueIdentifier: $id) {
+        associations {
+          company_collection {
+            total
+          }
+          contact_collection {
+            total
+          }
+        }
+      }
+    }
+  }
+`;
+
 exports.main = async (context = {}) => {
   const { hs_object_id } = context.propertiesToSend;
-  const token = process.env['PRIVATE_APP_ACCESS_TOKEN'];
+  const token = process.env['privateappkey'];
 
   return await fetchDealData(token, hs_object_id);
 };
@@ -32,4 +49,7 @@ const fetchDealData = async (token, id) => {
   );
 
   return {
-    ...responseBody.data.CRM
+    associations: responseBody.data.CRM.deal.associations,
+    lineItemCount: lineItemsResponse.data.total,
+  };
+};

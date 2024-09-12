@@ -12,6 +12,12 @@ import {
   hubspot,
 } from '@hubspot/ui-extensions';
 
+// Define the extension to be run within the Hubspot CRM
+hubspot.extend<'crm.record.tab'>(({ context, runServerlessFunction }) => (
+  // This line specifies what is returned to the CRM tab
+  <Extension runServerless={runServerlessFunction} context={context} />
+));
+
 // Define the Association interface
 interface Association {
   total: number;

@@ -19,7 +19,7 @@ const QUERY = `
 
 exports.main = async (context = {}) => {
   const { hs_object_id } = context.propertiesToSend;
-  const token = process.env['privateappkey'];
+  const token = process.env['appsecret'];
 
   return await fetchDealData(token, hs_object_id);
 };

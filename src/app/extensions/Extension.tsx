@@ -27,8 +27,8 @@ interface DealData {
 }
 
 interface ExtensionProps {
-  runServerless: any; // Replace 'any' with the correct type if available
-  context: any; // Replace 'any' with the correct type if available
+  runServerless: ServerlessFuncRunner; // 
+  context: Context; // 
 }
 
 const Extension: React.FC<ExtensionProps> = ({ runServerless, context }) => {

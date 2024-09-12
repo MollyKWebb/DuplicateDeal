@@ -3,7 +3,7 @@ const axios = require('axios');
 exports.main = async (context = {}) => {
   const { hs_object_id } = context.propertiesToSend;
   const { associations, newDealName } = context.parameters;
-  const token = process.env['privateappkey'];
+  const token = process.env['appsecret'];
 
   const properties = await fetchProperties(token, hs_object_id);
   const filteredProperties = filterProperties({ ...properties, dealname: newDealName });

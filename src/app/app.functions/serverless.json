@@ -1,11 +1,11 @@
 {
   "appFunctions": {
-    "fetchAssociations": {
-      "file": "fetchAssociations.js",
+    "fetchDealData": {
+      "file": "fetchDealData.js",
       "secrets": []
     },
-    "duplicateContact": {
-      "file": "duplicateContact.js",
+    "duplicateDeal": {
+      "file": "duplicateDeal.js",
       "secrets": []
     }
   }

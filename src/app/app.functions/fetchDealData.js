@@ -2,7 +2,7 @@ const axios = require('axios');
 
 exports.main = async (context = {}) => {
   const { hs_object_id } = context.propertiesToSend;
-  const token = process.env['appsecret'];
+  const token = process.env['privateappkey'];
 
   return await fetchDealData(token, hs_object_id);
 };

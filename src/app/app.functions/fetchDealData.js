@@ -1,5 +1,12 @@
 const axios = require('axios');
 
+exports.main = async (context = {}) => {
+  const { hs_object_id } = context.propertiesToSend;
+  const token = process.env['appsecret'];
+
+  return await fetchDealData(token, hs_object_id);
+};
+
 const QUERY = `
   query data($id: String!) {
     CRM {
@@ -17,12 +24,7 @@ const QUERY = `
   }
 `;
 
-exports.main = async (context = {}) => {
-  const { hs_object_id } = context.propertiesToSend;
-  const token = process.env['appsecret'];
 
-  return await fetchDealData(token, hs_object_id);
-};
 
 const fetchDealData = async (token, id) => {
   const requestBody = {

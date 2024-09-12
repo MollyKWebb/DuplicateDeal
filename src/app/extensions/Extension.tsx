@@ -15,121 +15,97 @@ import {
   type ServerlessFuncRunner,
 } from '@hubspot/ui-extensions';
 
-// Define the extension to be run within the Hubspot CRM
-hubspot.extend<'crm.record.tab'>(({ context, runServerlessFunction }) => (
-  // This line specifies what is returned to the CRM tab
-  <Extension runServerless={runServerlessFunction} context={context} />
-));
+// ... (keep existing imports)
 
-// Define the types for the properties we're going to use in our Extension component
-interface ExtensionProps {
-  runServerless: ServerlessFuncRunner;
-  context: Context;
+// Update interfaces for deal data
+export interface DealData {
+  associations: {
+    company_collection: Association;
+    contact_collection: Association;
+  };
+  lineItemCount: number;
 }
 
-// Define the interface for the Association type
-export interface Association {
-  total: number;
-  items: { hs_object_id: number }[];
-}
-
-// Define the interface for the AssociationsGQL type
-export interface AssociationsGQL {
-  deal_collection__contact_to_deal: Association;
-  company_collection__primary: Association;
-}
-
-// Define the Extension component, taking in runServerless and context as props
 const Extension = ({ runServerless, context }: ExtensionProps) => {
   const [loading, setLoading] = useState(true);
-  const [associations, setAssociations] = useState<AssociationsGQL>();
-  const [email, setEmail] = useState('');
+  const [dealData, setDealData] = useState<DealData>();
+  const [newDealName, setNewDealName] = useState('');
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Request association data from serverless function
     runServerless({
-      name: 'fetchAssociations',
+      name: 'fetchDealData',
       propertiesToSend: ['hs_object_id'],
     }).then((resp) => {
-      setLoading(false); // End loading state
+      setLoading(false);
       if (resp.status === 'SUCCESS') {
-        // Set associations with response data
-        setAssociations(resp.response.associations as AssociationsGQL);
+        setDealData(resp.response as DealData);
       } else {
-        setError(resp.message); // Set error message from response
+        setError(resp.message);
       }
     });
   }, [runServerless]);
 
-  // Function to handle contact duplication
-  const duplicateContact = () => {
+  const duplicateDeal = () => {
     setLoading(true);
     runServerless({
-      name: 'duplicateContact',
+      name: 'duplicateDeal',
       propertiesToSend: ['hs_object_id'],
-      parameters: { associations, email }, // Send current associations and email as parameters
+      parameters: { newDealName },
     }).then((resp) => {
       setLoading(false);
       if (resp.status === 'SUCCESS') {
-        const contact = resp.response;
-        // Set the URL to the newly created contact
+        const deal = resp.response;
         setUrl(
-          `https://app.hubspot.com/contacts/${context.portal.id}/contact/${contact.id}`
+          `https://app.hubspot.com/contacts/${context.portal.id}/deal/${deal.id}`
         );
       } else {
-        setError(resp.message); // Set error message from response
+        setError(resp.message);
       }
     });
   };
 
-  if (loading) {
-    // If loading, show a spinner
-    return <LoadingSpinner label="fetching object associations" />;
-  }
+  // ... (keep loading and error handling)
 
-  if (error !== '') {
-    // If there's an error, show an alert
-    return <Alert title="Error">{error}</Alert>;
-  }
-
-  if (associations && url === '') {
-    // If we have associations data but no URL, show the associations and a duplication form
+  if (dealData && url === '') {
     return (
       <>
         <Flex direction={'column'} gap={'lg'}>
           <Text variant="microcopy">
-            Duplicate a contact along with some of its properties and associated deals and companies.
+            Duplicate a deal along with its properties, associated companies and contacts, and line items.
           </Text>
           <Flex direction={'column'} gap={'sm'}>
             <Text format={{ fontWeight: 'bold' }}>
-              Enter an email for the new contact:
+              Enter a name for the new deal:
             </Text>
             <Input
               label=""
-              name="email"
-              onInput={(v) => setEmail(v)}
+              name="newDealName"
+              onInput={(v) => setNewDealName(v)}
               required={true}
             />
             <Text format={{ fontWeight: 'bold' }}>
-              Number of associations to be copied:
+              Associations and line items to be copied:
             </Text>
             <DescriptionList direction="row">
-              <DescriptionListItem label={'Deals'}>
-                {associations.deal_collection__contact_to_deal.total}
-              </DescriptionListItem>
               <DescriptionListItem label={'Companies'}>
-                {associations.company_collection__primary.total}
+                {dealData.associations.company_collection.total}
+              </DescriptionListItem>
+              <DescriptionListItem label={'Contacts'}>
+                {dealData.associations.contact_collection.total}
+              </DescriptionListItem>
+              <DescriptionListItem label={'Line Items'}>
+                {dealData.lineItemCount}
               </DescriptionListItem>
             </DescriptionList>
             <Flex direction={'row'} justify={'end'}>
               <Button
-                onClick={duplicateContact}
-                disabled={email === ''}
+                onClick={duplicateDeal}
+                disabled={newDealName === ''}
                 variant="primary"
               >
-                Duplicate Contact
+                Duplicate Deal
               </Button>
             </Flex>
           </Flex>
@@ -138,6 +114,8 @@ const Extension = ({ runServerless, context }: ExtensionProps) => {
     );
   }
 
+  // ... (keep URL display logic)
+};
   // If a URL has been generated, show it
   return (
     <>

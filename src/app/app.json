@@ -1,21 +1,23 @@
 {
-  "name": "Duplicate contact example app",
-  "description": "An example private app that contains a single card extension.",
-  "uid": "duplicate_contact_example_app",
+  "name": "Duplicate Deal",
+  "description": "A UI extension that enables the user to duplicate the current deal",
+  "uid": "duplicate_deal_example_app",
   "scopes": [
-    "crm.objects.contacts.read",
     "crm.objects.deals.read",
+    "crm.objects.deals.write",
+    "crm.objects.contacts.read",
     "crm.objects.companies.read",
+    "crm.objects.line_items.read",
+    "crm.objects.line_items.write",
     "collector.graphql_schema.read",
-    "collector.graphql_query.execute",
-    "crm.objects.contacts.write"
+    "collector.graphql_query.execute"
   ],
   "public": false,
   "extensions": {
     "crm": {
       "cards": [
         {
-          "file": "extensions/duplicate-contact-example-card.json"
+          "file": "extensions/duplicate-deal-example-card.json"
         }
       ]
     }
